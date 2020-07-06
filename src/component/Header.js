@@ -1,40 +1,33 @@
 import React from 'react';
 import {Text,View,StyleSheet, TouchableOpacity} from 'react-native';
 import BlogPostForm from './BlogPostForm';
+import {MaterialIcons} from '@expo/vector-icons';
 
 
-const Header=({headerText,symbolplus,symbolmenu,onSubmit})=>{
+const Header=({headerText,task})=>{
     return (
-        <View style={styles.ViewStyle}>
-            <View>
-                <TouchableOpacity>
-                    {symbolmenu}
-                </TouchableOpacity>
-            </View>
-            <View style={{marginLeft:120}}>
+            <View style={styles.ViewStyle}>
                 <Text style={styles.TextStyle}>{headerText}</Text>
-            </View>
-            <View style={{borderColor:'red',flex:1,alignItems:'flex-end'}}>
-                <TouchableOpacity onPress={()=>onSubmit()}>
-                    {symbolplus}
+                <TouchableOpacity style={{marginRight:5}} onPress={()=>{
+                    task()
+                }}>
+                    <MaterialIcons name="shopping-cart" size={35}/>
                 </TouchableOpacity>
             </View>
-        </View>
     )
 }
 
 const styles=StyleSheet.create({
     TextStyle:{
-        fontSize:30
+        fontSize:30,
+        marginLeft:100
     },
     ViewStyle:{
-        height:60,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:'#F8F8F8',
-        borderBottomWidth:1,
-        borderBottomColor:'gray',
         flexDirection:"row",
+        alignItems:"center",
+        justifyContent:"space-between",
+        marginTop:20,
+        borderBottomWidth:2
     }
 })
 

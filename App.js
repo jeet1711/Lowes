@@ -7,16 +7,12 @@ import ResolveScreen from './src/Screens/ResolveScreen';
 import SignInScreen from './src/Screens/SignInScreen';
 import {Provider} from './src/context/BlogContext';
 import AccountScreen from './src/Screens/AccountScreen';
-import AddBlogScreen from './src/Screens/AddBlogScreen';
 import {FontAwesome} from '@expo/vector-icons';
-import ShowScreen from './src/Screens/ShowScreen';
-import EditScreen from './src/Screens/EditScreen';
+import BillingScreen from './src/Screens/BillingScreen';
 
 const BlogFlow=createStackNavigator({
   Sign:SignInScreen,
-  AddBlog:AddBlogScreen,
-  Show:ShowScreen,
-  Edit:EditScreen,
+  Billing:BillingScreen
 })
 
 BlogFlow.navigationOptions={
@@ -27,9 +23,9 @@ BlogFlow.navigationOptions={
 const navigator= createSwitchNavigator({
   Resolve:ResolveScreen,
   Login:LoginScreen,
-  Account:createBottomTabNavigator({
+   Account:createBottomTabNavigator({
     BlogFlow,
-    Account:AccountScreen
+    Account:AccountScreen,
   }),
   
 })

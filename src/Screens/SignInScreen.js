@@ -1,48 +1,105 @@
-import React, { useContext, useEffect } from 'react';
-import {Text,View, TouchableOpacity,StyleSheet,FlatList} from 'react-native';
+import React, { useContext, useEffect ,useState} from 'react';
+import {Text,View, TouchableOpacity,StyleSheet,FlatList,ImageBackground} from 'react-native';
 import Header from '../component/Header';
 import {Feather} from '@expo/vector-icons';
 import { Context } from '../context/BlogContext';
+import Grid from 'react-native-grid-component';
+import list from '../Json/db.json';
 
 const SignInScreen=({navigation})=>{
-    const {state:{blogPost},deleteBlogPost,getBlogPosts}=useContext(Context);
+    const[listing,setlisting]=useState(list);
+    const[items,setitems]=useState([]);
+    //console.log("****************************");
+    //console.log(items);
+    //console.log("****************************");
+    
 
-    useEffect(()=>{
-        getBlogPosts();
+    const updatecount=(data)=>{
+        //console.log(addAmount)
+        
+        setlisting([...listing].map(object=>
+            {
+                if(object.id===data.id){
+                    return {
+                        ...object,
+                        stock:object.stock-1
+                    }
+                }
+                else return object
+            }))
 
-       const listener= navigation.addListener('didFocus',()=>{
-            getBlogPosts();
-        })
+        updatecart(data)
+    }
 
-        return ()=>{
-            listener.remove();
+    const updatecart=(data)=>{
+        //console.log(data)
+        var c=0;
+        setitems([...items].map(object=>
+            {
+                if(object.id===data.id){
+                    c=1;
+                    return {
+                        ...object,
+                        stock:object.stock-1,
+                        quantity:object.quantity+1
+                    }
+
+                }
+                else return object;
+            }))
+
+        if(c!=1){
+        setitems([...items,data])
         }
-    },[])
+    }
+
+     const renderItems = (data) => (
+        <View style={[{ backgroundColor: 'white' }, styles.item]}>
+        <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+        <Text style={styles.TextStyle}>{listing[data.id].name}</Text>
+        <Text style={{fontSize:20}}>{data.price}/-</Text>
+        </View>
+        <ImageBackground source={{uri:data.uri}} 
+        style={{height:100}}/>
+        
+        {listing[data.id].stock<=0 ?
+            <View style={{flexDirection:"row",alignItems:"center"}}>
+             <Text style={{color:"black",margin:5}}>No items left</Text></View>:
+            
+            <View style={{flexDirection:"row",alignItems:"center"}}>
+
+            <TouchableOpacity onPress={()=>
+                updatecount(data)
+               
+            }>
+             <Text style={styles.button}>Add Item</Text>
+            </TouchableOpacity>
+            <Text>{listing[data.id].stock} items left</Text>
+            </View>}
+        </View>
+      );
+
+      const renderPlaceholder = () => <View style={styles.item} />
+
+      const go_cart=()=>{
+          navigation.navigate('Billing',{items});
+      }
 
     var symbolplus=<Feather name="plus" size={40}/>
-    var symbolmenu=<Feather name="menu" size={40}/>
     return(
-        <View style={styles.OuterContainer}>
-            <Header headerText="My Blogs"
-             symbolplus={symbolplus}
-             symbolmenu={symbolmenu}
-             onSubmit={()=>navigation.navigate('AddBlog')} />
-
-            <FlatList
-             data={blogPost}
-             keyExtractor={blogPosts=>blogPosts.title}
-             renderItem={({item})=>{
-                 return (
-                     <TouchableOpacity onPress={()=>navigation.navigate('Show',{id:item.id})}>
-                     <View style={styles.ListContainerStyle}>
-                       <Text style={{fontSize:30}}>{item.title}-{item.id}</Text>
-                       <TouchableOpacity style={styles.IconStyle} onPress={()=>deleteBlogPost(item.id)}>
-                       <Feather name="trash-2" size={30} />
-                       </TouchableOpacity>
-                     </View>
-                     </TouchableOpacity>
-                 )
-             }}/>
+        <View style={{flex:1}}>
+        <Header 
+            headerText="Available Items" 
+            task={go_cart}
+        />
+        <Grid
+            style={styles.list}
+            renderItem={renderItems}
+            keyExtractor={item=>item.id}
+            renderPlaceholder={renderPlaceholder}
+            data={list}
+            numColumns={2}
+        />
         </View>
     )
 }
@@ -52,19 +109,32 @@ SignInScreen.navigationOptions={
 }
 
 const styles=StyleSheet.create({
-    OuterContainer:{
-        flex:1
+    item: {
+        flex: 1,
+        height: 160,
+        margin: 2,
+        borderRadius:5
+      },
+    list: {
+        flex: 1
+      },
+    button:{
+        alignItems:"flex-end",
+        marginLeft:5,
+        borderWidth:0.8,
+        height:25,
+        padding:2,
+        paddingLeft:8,
+        width:80,
+        backgroundColor:'#ebae34',
+        marginRight:5,
+        borderRadius:8,
+        elevation:10,
+        marginTop:5
+
     },
-    ListContainerStyle:{
-        flexDirection:'row',
-        flex:1,
-        justifyContent:'space-between',
-        borderTopWidth:1,
-        borderColor:'gray'
-    },
-    IconStyle:{
-        paddingTop:5
-    
+    TextStyle:{
+        fontSize:20
     }
 })
 
